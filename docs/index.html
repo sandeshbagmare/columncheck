@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>columncheck — find the CSV defect before the pipeline does</title>
+<meta name="description" content="Find the csv defect before the pipeline does. Standard library only, Python 3.9+.">
+<meta property="og:title" content="columncheck — find the CSV defect before the pipeline does">
+<meta property="og:description" content="Find the csv defect before the pipeline does. Standard library only, Python 3.9+.">
+<meta property="og:image" content="https://raw.githubusercontent.com/sandeshbagmare/columncheck/main/assets/banner.svg">
+<meta property="og:type" content="website">
+<link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+<style>
+  :root {
+    --bg: hsl(192 45% 8%);
+    --ink: #e6edf6;
+    --muted: #9fb0c6;
+    --line: hsl(192 35% 26%);
+    --accent: hsl(152 88% 66%);
+    --soft: hsl(152 92% 80%);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.65 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  a { color: var(--soft); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  header {
+    position: sticky; top: 0; z-index: 9; display: flex; gap: 18px; align-items: center;
+    padding: 14px 24px; background: rgba(8, 12, 20, 0.86); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  header .mark { width: 26px; height: 26px; }
+  header strong { font-family: ui-monospace, monospace; letter-spacing: 0.02em; }
+  header nav { margin-left: auto; display: flex; gap: 16px; font-size: 14px; }
+  .hero { max-width: 1180px; margin: 0 auto; padding: 18px 20px 0; }
+  .hero img { width: 100%; border-radius: 14px; box-shadow: 0 18px 50px rgba(0,0,0,0.45); }
+  main { max-width: 900px; margin: 0 auto; padding: 28px 20px 80px; }
+  h1, h2, h3, h4 { line-height: 1.25; }
+  h2 { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92em;
+    background: rgba(148, 163, 184, 0.15); padding: 1px 5px; border-radius: 5px;
+  }
+  pre.code {
+    position: relative; background: #070b12; border: 1px solid var(--line);
+    border-radius: 12px; padding: 16px; overflow-x: auto;
+  }
+  pre.code code { background: none; padding: 0; font-size: 14px; }
+  pre .lang {
+    position: absolute; top: 8px; right: 12px; font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 15px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; }
+  img { max-width: 100%; }
+  blockquote {
+    margin: 18px 0; padding: 4px 16px; border-left: 3px solid var(--accent);
+    color: var(--muted);
+  }
+  footer {
+    border-top: 1px solid var(--line); padding: 26px 20px; color: var(--muted);
+    font-size: 14px; text-align: center;
+  }
+</style>
+</head>
+<body>
+<header>
+  <img class="mark" src="../assets/logo.svg" alt="">
+  <strong>columncheck</strong>
+  <nav>
+    <a href="https://pypi.org/project/columncheck/">PyPI</a>
+    <a href="https://github.com/sandeshbagmare/columncheck">GitHub</a>
+    <a href="https://github.com/sandeshbagmare/columncheck/issues">Issues</a>
+    <a href="https://github.com/sandeshbagmare/columncheck/blob/main/CHANGELOG.md">Changelog</a>
+  </nav>
+</header>
+<div class="hero"><img src="../assets/banner.svg" alt="columncheck"></div>
+<main>
+<p align="center">
+  <img src="../assets/how.svg" width="720" alt="how columncheck fits in">
+</p>
+<h2>Install</h2>
+<pre class="code"><span class="lang">console</span><code>pip install columncheck</code></pre>
+<h2>Use</h2>
+<pre class="code"><span class="lang">console</span><code>columncheck data.csv                       # structure only
+columncheck data.csv --header a,b,c        # ... and the columns it must have
+columncheck data.csv --sniff               # guess , ; tab or | first
+columncheck data.tsv --delimiter $&#x27;\t&#x27;
+columncheck data.csv --allow-ragged         # field counts may vary
+columncheck data.csv --json                 # for a dashboard, exit 1 on problems</code></pre>
+<pre class="code"><span class="lang">python</span><code>from columncheck import lint_csv, sniff_delimiter
+
+problems = lint_csv(open(&quot;data.csv&quot;, &quot;rb&quot;).read(), expected_header=[&quot;id&quot;, &quot;total&quot;])
+for problem in problems:
+    print(problem)            # line 418: 4 field(s), header has 5 (ragged-row)</code></pre>
+<h2>Checks</h2>
+<table><thead><tr>
+<th>code</th>
+<th>what it means</th>
+</tr></thead><tbody>
+<tr><td><code>bom</code></td><td>the file starts with a byte order mark; the first column is <code>\ufeffname</code></td></tr>
+<tr><td><code>nul-byte</code></td><td>a NUL byte, which most parsers choke on later</td></tr>
+<tr><td><code>empty-file</code></td><td>no header row at all</td></tr>
+<tr><td><code>empty-header</code></td><td>the header row is empty, or a column has no name</td></tr>
+<tr><td><code>padded-header</code></td><td><code>" a "</code> — invisible in a spreadsheet, painful in SQL</td></tr>
+<tr><td><code>duplicate-header</code></td><td>the same name twice; <code>DictReader</code> silently keeps the last</td></tr>
+<tr><td><code>ragged-row</code></td><td>a row whose field count differs from the header</td></tr>
+<tr><td><code>missing-column</code> / <code>extra-column</code></td><td>the file is not what you expected</td></tr>
+<tr><td><code>encoding</code></td><td>the bytes are not valid in the encoding you asked for</td></tr>
+<tr><td><code>malformed</code></td><td>the CSV itself is broken</td></tr>
+</tbody></table>
+<p>Quoted fields containing commas or newlines are handled properly, and row numbers stay correct across a multi-line quoted field.</p>
+<h2>Limits</h2>
+<ul>
+<li>Structure only: it does not check types, date formats or value ranges.</li>
+<li>It reads the whole file into memory once; that is fine for the sizes that fit in a</li>
+</ul>
+<p>  spreadsheet and wrong for a 30 GB dump — use a streaming validator there.</p>
+<ul>
+<li><code>sniff_delimiter</code> looks at the first 50 rows and the four candidates <code>, ; \t |</code>.</li>
+</ul>
+<h2>Development</h2>
+<pre class="code"><span class="lang">console</span><code>python -m venv .venv
+.venv/bin/pip install -e &quot;.[test]&quot;
+.venv/bin/pytest</code></pre>
+<h2>License</h2>
+<p>MIT.</p>
+</main>
+<footer>
+  columncheck · MIT · standard library only ·
+  <a href="https://github.com/sandeshbagmare/columncheck">source</a> ·
+  <a href="https://pypi.org/project/columncheck/">pip install columncheck</a>
+</footer>
+</body>
+</html>

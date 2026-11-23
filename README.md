@@ -1,23 +1,23 @@
-# columncheck
+<p align="center">
+  <img src="https://raw.githubusercontent.com/sandeshbagmare/columncheck/main/assets/banner.svg" width="100%" alt="columncheck: find the CSV defect before the pipeline does">
+</p>
 
-Lint a CSV's structure before it reaches a parser, a spreadsheet or a database.
+<p align="center">
+  <a href="https://pypi.org/project/columncheck/"><img alt="PyPI version" src="https://img.shields.io/pypi/v/columncheck.svg"></a>
+  <a href="https://pypi.org/project/columncheck/"><img alt="Python versions" src="https://img.shields.io/pypi/pyversions/columncheck.svg"></a>
+  <a href="https://pypi.org/project/columncheck/"><img alt="Downloads" src="https://img.shields.io/pypi/dm/columncheck.svg"></a>
+  <a href="https://github.com/sandeshbagmare/columncheck/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/sandeshbagmare/columncheck/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/sandeshbagmare/columncheck/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/pypi/l/columncheck.svg"></a>
+  <a href="https://sandeshbagmare.github.io/columncheck/"><img alt="docs" src="https://img.shields.io/badge/docs-online-2ea44f.svg"></a>
+  <a href="https://pypi.org/project/columncheck/"><img alt="zero dependencies" src="https://img.shields.io/badge/dependencies-0-2ea44f.svg"></a>
+</p>
 
-[![PyPI](https://img.shields.io/pypi/v/columncheck.svg)](https://pypi.org/project/columncheck/)
-[![Python](https://img.shields.io/pypi/pyversions/columncheck.svg)](https://pypi.org/project/columncheck/)
-[![tests](https://github.com/sandeshbagmare/columncheck/actions/workflows/ci.yml/badge.svg)](https://github.com/sandeshbagmare/columncheck/actions/workflows/ci.yml)
-[![license](https://img.shields.io/pypi/l/columncheck.svg)](https://github.com/sandeshbagmare/columncheck/blob/main/LICENSE)
+<h3 align="center">find the CSV defect before the pipeline does</h3>
+<p align="center"><em>Standard library only. No runtime dependencies. Python 3.9+.</em></p>
 
-```console
-$ columncheck orders.csv --header id,total,currency
-orders.csv:1: expected column 'currency' (missing-column)
-orders.csv:418: 4 field(s), header has 5 (ragged-row)
-2 problem(s), delimiter ',': missing-column, ragged-row
-```
-
-CSV is forgiving in the worst way: `csv.DictReader` happily turns a duplicated header
-into a lost column, a row with one field too few into shifted values, and a UTF-8 BOM
-into a first column nobody can look up. None of that raises. `columncheck` reports it
-in one pass, with line numbers.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/sandeshbagmare/columncheck/main/assets/how.svg" width="720" alt="how columncheck fits in">
+</p>
 
 ## Install
 
