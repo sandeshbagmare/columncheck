@@ -218,3 +218,54 @@ class TestCommandLine:
     def test_missing_file_exits_two(self, tmp_path, capsys):
         assert self.run([str(tmp_path / "nope.csv")]) == 2
         assert "no such file" in capsys.readouterr().err
+
+
+class TestRigour:
+    """csv module errors, blank lines and the CLI's own error path."""
+
+    def test_a_header_that_csv_refuses(self):
+        problems = lint_csv("a" * 200_000 + ",b\n1,2\n")
+        assert problems[0].code == "malformed"
+        assert "cannot read the header" in problems[0].message
+
+    def test_a_data_row_that_csv_refuses(self):
+        problems = lint_csv("a,b\n" + "x" * 200_000 + ",2\n")
+        assert problems[0].code == "malformed"
+        assert problems[0].line == 2
+
+    def test_an_empty_record_is_skipped(self):
+        assert lint_csv("a,b\n\n1,2\n") == []
+
+    def test_a_ragged_row_can_be_allowed(self):
+        assert lint_csv("a,b\n1,2,3\n", allow_ragged=True) == []
+
+    def test_a_header_with_only_one_column(self):
+        problems = lint_csv("a\n1\n2\n")
+        assert [problem.code for problem in problems] == []
+
+    def test_the_cli_reports_an_undecodable_file(self, tmp_path, capsys):
+        from columncheck.__main__ import main
+
+        path = tmp_path / "bad.csv"
+        path.write_bytes(b"\xff\xfe\x00a,b\n")
+        assert main([str(path)]) == 1
+        assert "not valid utf-8" in capsys.readouterr().out
+
+    def test_the_cli_rejects_a_multi_character_delimiter(self, tmp_path, capsys):
+        from columncheck.__main__ import main
+
+        path = tmp_path / "ok.csv"
+        path.write_text("a,b\n1,2\n", encoding="utf-8")
+        assert main([str(path), "--delimiter", "::"]) == 2
+        assert "one character" in capsys.readouterr().err
+
+
+class TestRigour2:
+    """Delimiter sniffing at its edges."""
+
+    def test_a_long_file_stops_sampling_after_fifty_rows(self):
+        document = "a;b\n" + "1;2\n" * 60
+        assert sniff_delimiter(document.encode("utf-8")) == ";"
+
+    def test_an_empty_document_falls_back_to_a_comma(self):
+        assert sniff_delimiter(b"") == ","
