@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "columncheck"
+version = "0.1.0"
+description = "Lint CSV structure: BOM, duplicate or empty headers, ragged rows"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Sandesh Bagmare" }]
+keywords = ["csv", "lint", "validation", "data-quality", "headers", "cli"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.scripts]
+columncheck = "columncheck.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/sandeshbagmare/columncheck"
+Issues = "https://github.com/sandeshbagmare/columncheck/issues"
+Changelog = "https://github.com/sandeshbagmare/columncheck/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/columncheck"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
