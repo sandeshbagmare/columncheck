@@ -177,7 +177,8 @@ class TestCommandLine:
 
     def write(self, tmp_path, text, name="data.csv"):
         path = tmp_path / name
-        path.write_text(text, encoding="utf-8", newline="")
+        # write_text(newline=...) is 3.10+, and this suite runs on 3.9 too
+        path.write_bytes(text.encode("utf-8"))
         return str(path)
 
     def test_a_clean_file_exits_zero(self, tmp_path, capsys):
